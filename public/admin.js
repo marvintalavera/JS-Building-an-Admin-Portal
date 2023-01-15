@@ -1,40 +1,38 @@
 
 // Your Code Here
-async function main(){
-    let response = await fetch('http://localhost:3001/listBooks')
-    let books = await response.json()
+let root = document.querySelector('#root')
 
-    books.forEach(renderBook);
-}
+const updateQuantity = async () => {
+    let res = await fetch('http://localhost:3001/listBooks')
+    let books = await res.json()
 
-function renderBook(book) {
-    let root = document.querySelector('#root')
+    let ul = document.createElement('ul')
 
-    let li = document.createElement('li')
-    li.textContent = book.title
+    books.forEach(ube => {
+        let li = document.createElement('li')
 
-    let quantityInput = document.createElement('input')
-    quantityInput.value = book.quantity
+        let input = document.createElement('input')
+        input.type = 'text'
+        input.value = ube.quantity
 
-    let saveButton = document.createElement('button')
-    saveButton.textContent = 'Save'
-
-    saveButton.addEventListener('click', ()=>{
-        fetch('http://localhost:3001/updateBook', {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id:book.id,
-                quantity: quantityInput.value
+        let btn = document.createElement('button')
+        btn.textContent = 'Save'
+        btn.addEventListener('click', () => {
+            fetch('http://localhost:3001/updateBook', {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({'id': ube.id, 'quantity': `${input.value}`})
             })
         })
+
+        let p = document.createElement('p')
+        p.textContent = ube.title
+        
+        li.append(p, input, btn)
+        ul.append(li)
     })
 
-    li.append(quantityInput, saveButton)
-
-    root.append(li)
+    root.append(ul)
 }
 
-main()
+updateQuantity()
